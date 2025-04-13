@@ -1,8 +1,25 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Message, User, mockUsers } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
+import { useChat } from "@/contexts/ChatContext";
+
+interface Message {
+  id: string;
+  content: string;
+  sender_id?: string | null;
+  timestamp: string;
+  is_ai: boolean;
+  type?: 'user' | 'ai';
+  userId?: string;
+  mentioned_users?: string[];
+}
+
+interface User {
+  id: string;
+  username: string;
+  avatar?: string;
+}
 
 interface ChatMessageProps {
   message: Message;
@@ -10,12 +27,15 @@ interface ChatMessageProps {
 }
 
 export function ChatMessage({ message, users }: ChatMessageProps) {
-  // Find the user who sent the message (for user messages)
-  const sender = message.userId 
-    ? users.find(user => user.id === message.userId) || mockUsers[0]
+  const { currentUser } = useChat();
+  
+  // Find the sender (for user messages)
+  const sender = message.sender_id 
+    ? users.find(user => user.id === message.sender_id) 
     : null;
   
-  const isAI = message.type === 'ai';
+  const isAI = message.is_ai;
+  const isCurrentUser = currentUser && sender && currentUser.id === sender.id;
   
   // Format the message timestamp
   const formattedTime = formatRelativeTime(message.timestamp);
@@ -60,18 +80,19 @@ export function ChatMessage({ message, users }: ChatMessageProps) {
     <div className={cn(
       "flex gap-3 p-4 transition-colors animate-fade-in",
       isAI ? "bg-muted/10 border-l-2 border-accent/50" : "bg-transparent hover:bg-muted/5",
+      isCurrentUser ? "bg-accent/5" : "", // Highlight own messages
     )}>
       {/* Avatar for the message sender */}
       <Avatar className="h-8 w-8 ring-2 ring-background">
         <AvatarImage 
           src={isAI ? "/placeholder.svg" : sender?.avatar} 
-          alt={isAI ? "AI" : sender?.name}
+          alt={isAI ? "AI" : sender?.username}
         />
         <AvatarFallback className={cn(
           "text-primary-foreground font-medium text-sm",
           isAI ? "bg-accent" : "bg-primary"
         )}>
-          {isAI ? "AI" : sender?.name.charAt(0)}
+          {isAI ? "AI" : sender?.username.charAt(0)}
         </AvatarFallback>
       </Avatar>
       
@@ -82,7 +103,8 @@ export function ChatMessage({ message, users }: ChatMessageProps) {
             "font-medium text-sm",
             isAI && "text-accent"
           )}>
-            {isAI ? "AI Assistant" : sender?.name}
+            {isAI ? "AI Assistant" : sender?.username}
+            {isCurrentUser && <span className="ml-1 text-xs text-muted-foreground">(you)</span>}
           </span>
           <span className="text-xs text-muted-foreground">
             {formattedTime}

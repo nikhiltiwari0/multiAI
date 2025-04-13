@@ -2,30 +2,17 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Send } from "lucide-react";
-import { useState, FormEvent, KeyboardEvent, useEffect } from "react";
+import { useState, FormEvent, KeyboardEvent } from "react";
 import { useChat } from "@/contexts/ChatContext";
 import { toast } from "@/components/ui/use-toast";
 
 export function ChatInput() {
   const [message, setMessage] = useState("");
-  const { sendChatMessage, isSendingMessage, currentChat, users } = useChat();
+  const { sendChatMessage, isSendingMessage, currentChat, users, currentUser } = useChat();
   
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!message.trim() || isSendingMessage || !currentChat) return;
-    
-    // Check if the message contains any tags
-    const containsAITag = message.includes("@AI");
-    const userTags = users.filter(user => message.includes(`@${user.name}`));
-    
-    if (!containsAITag && userTags.length === 0) {
-      toast({
-        title: "Missing tag",
-        description: "Please tag either the AI (@AI) or a specific user (@username) in your message.",
-        variant: "destructive",
-      });
-      return;
-    }
+    if (!message.trim() || isSendingMessage || !currentChat || !currentUser) return;
     
     await sendChatMessage(message);
     setMessage("");
@@ -48,13 +35,13 @@ export function ChatInput() {
             onKeyDown={handleKeyDown}
             placeholder="Type a message... (Tag the AI with @AI or users with @username)"
             className="min-h-24 resize-none"
-            disabled={isSendingMessage || !currentChat}
+            disabled={isSendingMessage || !currentChat || !currentUser}
           />
           <Button 
             type="submit" 
             size="icon" 
             className="mb-1 h-10 w-10 shrink-0"
-            disabled={!message.trim() || isSendingMessage || !currentChat}
+            disabled={!message.trim() || isSendingMessage || !currentChat || !currentUser}
           >
             <Send size={18} />
             <span className="sr-only">Send</span>
@@ -63,7 +50,9 @@ export function ChatInput() {
         <div className="text-xs text-muted-foreground flex flex-wrap gap-1">
           <span>Press Enter to send, Shift+Enter for a new line</span>
           <span>•</span>
-          <span>Tag the AI with <code className="bg-muted px-1 rounded">@AI</code> or users with <code className="bg-muted px-1 rounded">@username</code></span>
+          <span>
+            Tag the AI with <code className="bg-muted px-1 rounded">@AI</code> or users with <code className="bg-muted px-1 rounded">@username</code>
+          </span>
         </div>
       </div>
     </form>
