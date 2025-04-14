@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import CodeCopyBtn from "./CodeCopyBtn";
 import { Loader2 } from "lucide-react";
@@ -8,6 +8,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
+import { io } from "socket.io-client";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { useChat } from "@/contexts/ChatContext";
@@ -36,15 +37,31 @@ interface ChatMessageProps {
   users: User[];
 }
 
+// Define the socket connection
+const socket = io("https://shared-ai.vercel.app"); // Replace with your server URL
+
 export function ChatMessage({ message, users }: ChatMessageProps) {
   const { currentUser } = useChat();
   const chatEndRef = useRef<HTMLDivElement | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [message]);
+
+  useEffect(() => {
+    // Listen for new messages
+    socket.on("newMessage", (newMessage: Message) => {
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+    });
+
+    // Clean up the socket connection on unmount
+    return () => {
+      socket.off("newMessage");
+    };
+  }, []);
 
   // Find the sender (for user messages)
   const sender = message.sender_id
@@ -97,6 +114,19 @@ export function ChatMessage({ message, users }: ChatMessageProps) {
     }
 
     return parts.length > 0 ? parts : content;
+  };
+
+  // Function to send a message
+  const sendMessage = (content: string) => {
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      content: content,
+      sender_id: currentUser?.id || null,
+      timestamp: new Date().toISOString(), // Current timestamp in ISO format
+      is_ai: isAI, // Set to true if the message is from an AI
+      type: isAI ? "ai" : "user", // Set to "user" for user messages
+    };
+    socket.emit("sendMessage", newMessage);
   };
 
   return (

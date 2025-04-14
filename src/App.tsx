@@ -7,6 +7,7 @@ import { ChatProvider } from "@/contexts/ChatContext";
 import Index from "./pages/Index";
 import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
+import ChatDemoPage from "./pages/ChatDemoPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import Subscribe from "./pages/Subscribe";
@@ -35,6 +36,7 @@ const App = () => (
                 }
               />
               <Route path="/subscribe" element={<Subscribe />} />
+              <Route path="/chat-demo" element={<ChatDemoPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

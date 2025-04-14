@@ -1,3 +1,68 @@
+import { Link } from "react-router-dom";
+
+export default function Landing() {
+  return (
+    <div className="flex flex-col min-h-screen">
+      <header className="py-6 px-8 border-b">
+        <div className="container mx-auto flex justify-between items-center">
+          <h1 className="text-2xl font-bold">SharedAI</h1>
+          <nav>
+            <ul className="flex gap-6">
+              <li>
+                <Link to="/auth" className="hover:underline">
+                  Sign In
+                </Link>
+              </li>
+              <li>
+                <Link to="/chat-demo" className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                  Chat Demo
+                </Link>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </header>
+      
+      <main className="flex-1 container mx-auto py-16 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl font-bold mb-8">Welcome to SharedAI</h2>
+          <p className="text-xl text-gray-600 mb-10">
+            A platform for real-time communication and AI collaboration.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16">
+            <div className="p-8 border rounded-lg shadow-sm hover:shadow-md transition-shadow">
+              <h3 className="text-2xl font-semibold mb-4">Real-time Chat</h3>
+              <p className="text-gray-600 mb-6">
+                Experience seamless real-time messaging with automatic updates and notifications.
+              </p>
+              <Link to="/chat-demo" className="inline-block px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                Try Chat Demo
+              </Link>
+            </div>
+            
+            <div className="p-8 border rounded-lg shadow-sm hover:shadow-md transition-shadow">
+              <h3 className="text-2xl font-semibold mb-4">Full Application</h3>
+              <p className="text-gray-600 mb-6">
+                Sign in to explore the complete suite of features available in SharedAI.
+              </p>
+              <Link to="/auth" className="inline-block px-6 py-3 bg-gray-800 text-white rounded-md hover:bg-gray-900">
+                Get Started
+              </Link>
+            </div>
+          </div>
+        </div>
+      </main>
+      
+      <footer className="py-8 px-4 border-t">
+        <div className="container mx-auto text-center text-gray-500">
+          <p>&copy; {new Date().getFullYear()} SharedAI. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
