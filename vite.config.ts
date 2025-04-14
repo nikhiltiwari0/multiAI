@@ -1,3 +1,4 @@
+import { componentTagger } from "lovable-tagger";
 import { defineConfig } from "vite";
 import path from "path";
 import react from "@vitejs/plugin-react-swc";
