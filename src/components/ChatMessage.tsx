@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useEffect, useRef } from "react";
 
 import CodeCopyBtn from "./CodeCopyBtn";
 import { Loader2 } from "lucide-react";
@@ -37,6 +38,13 @@ interface ChatMessageProps {
 
 export function ChatMessage({ message, users }: ChatMessageProps) {
   const { currentUser } = useChat();
+  const chatEndRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [message]);
 
   // Find the sender (for user messages)
   const sender = message.sender_id
@@ -188,6 +196,8 @@ export function ChatMessage({ message, users }: ChatMessageProps) {
           )}
         </div>
       </div>
+
+      <div ref={chatEndRef} />
     </div>
   );
 }
