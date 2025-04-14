@@ -121,12 +121,71 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_invitations: {
+        Row: {
+          id: string
+          chat_id: string
+          inviting_user_id: string
+          invited_user_id: string
+          status: "pending" | "accepted" | "declined"
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          chat_id: string
+          inviting_user_id: string
+          invited_user_id: string
+          status?: "pending" | "accepted" | "declined"
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          chat_id?: string
+          inviting_user_id?: string
+          invited_user_id?: string
+          status?: "pending" | "accepted" | "declined"
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_invitations_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_invitations_inviting_user_id_fkey"
+            columns: ["inviting_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+           {
+            foreignKeyName: "chat_invitations_invited_user_id_fkey"
+            columns: ["invited_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      accept_chat_invitation: {
+        Args: { invitation_id: string };
+        Returns: void;
+      }
+      check_chat_participant: {
+        Args: { chat_id: string; user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

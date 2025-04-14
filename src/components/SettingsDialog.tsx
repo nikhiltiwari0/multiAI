@@ -1,5 +1,3 @@
-
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,19 +7,24 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Settings } from "lucide-react";
-import { useTheme } from "@/components/theme-provider";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useState } from "react";
-import { currentUser } from "@/lib/mock-data";
-import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useTheme } from "@/components/theme-provider";
 
 export function SettingsDialog() {
   const [open, setOpen] = useState(false);
   const { theme, setTheme } = useTheme();
-  const [userName, setUserName] = useState(currentUser.name);
+  const { currentUser, signOut } = useAuth();
+  const [userName, setUserName] = useState(currentUser?.username || "");
+  const navigate = useNavigate();
 
   const handleSave = () => {
     toast({
@@ -29,6 +32,11 @@ export function SettingsDialog() {
       description: "Your settings have been updated successfully.",
     });
     setOpen(false);
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/");
   };
 
   return (
@@ -42,9 +50,7 @@ export function SettingsDialog() {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Settings</DialogTitle>
-          <DialogDescription>
-            Customize your chat experience
-          </DialogDescription>
+          <DialogDescription>Customize your chat experience</DialogDescription>
         </DialogHeader>
         <div className="space-y-6 py-4">
           <div className="space-y-2">
@@ -55,13 +61,15 @@ export function SettingsDialog() {
               onChange={(e) => setUserName(e.target.value)}
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="theme">Theme</Label>
-            <RadioGroup 
-              id="theme" 
+            <RadioGroup
+              id="theme"
               defaultValue={theme}
-              onValueChange={(value) => setTheme(value as "light" | "dark" | "system")}
+              onValueChange={(value) =>
+                setTheme(value as "light" | "dark" | "system")
+              }
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="light" id="light" />
@@ -71,22 +79,25 @@ export function SettingsDialog() {
                 <RadioGroupItem value="dark" id="dark" />
                 <Label htmlFor="dark">Dark</Label>
               </div>
-              <div className="flex items-center space-x-2">
+              {/* <div className="flex items-center space-x-2">
                 <RadioGroupItem value="system" id="system" />
                 <Label htmlFor="system">System</Label>
-              </div>
+              </div> */}
             </RadioGroup>
           </div>
-
+{/* 
           <div className="space-y-2">
             <Label htmlFor="notifications">Notification Preferences</Label>
             <div className="text-sm text-muted-foreground">
               Would be implemented in a real application
             </div>
-          </div>
+          </div> */}
         </div>
         <DialogFooter>
           <Button onClick={handleSave}>Save changes</Button>
+          <Button variant="destructive" onClick={handleLogout}>
+            Logout
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

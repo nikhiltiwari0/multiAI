@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -26,7 +25,7 @@ export default function Landing() {
             <path d="M16 6H3" />
             <path d="M12 18H3" />
           </svg>
-          <span className="ml-2 text-xl font-bold">Shared AI Chat</span>
+          <span className="ml-2 text-xl font-bold">Shared AI</span>
         </Link>
         <nav className="ml-auto flex gap-4 sm:gap-6">
           {user ? (
@@ -106,7 +105,7 @@ export default function Landing() {
       </main>
       <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
         <p className="text-xs text-muted-foreground">
-          © 2025 Shared AI Chat. All rights reserved.
+          © 2025 Shared AI. All rights reserved.
         </p>
         <nav className="sm:ml-auto flex gap-4 sm:gap-6">
           <Link className="text-xs hover:underline underline-offset-4" to="/">
