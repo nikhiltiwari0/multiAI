@@ -1,7 +1,6 @@
-
-import { ThemeProvider } from "@/components/theme-provider";
-import { ChatProvider } from "@/contexts/ChatContext";
 import { ChatLayout } from "@/components/ChatLayout";
+import { ChatProvider } from "@/contexts/ChatContext";
+import { ThemeProvider } from "@/components/theme-provider";
 import { motion } from "framer-motion";
 
 const Index = () => {

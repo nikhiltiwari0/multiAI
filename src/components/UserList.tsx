@@ -9,35 +9,29 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Label } from "recharts";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { UserPlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import { useChat } from "@/contexts/ChatContext";
 import { useState } from "react";
 
 export function UserList() {
-  const { users, currentUser, currentChat,  } = useChat();
+  const { currentChat, users } = useChat();
+  const { currentUser } = useAuth();
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
   const [inviteUsername, setInviteUsername] = useState("");
   const [isInviting, setIsInviting] = useState(false);
 
-  const handleRemoveUser = async () => {
-    
-  }
   const handleInviteUser = async () => {
     if (!inviteUsername.trim() || !currentChat || !currentUser) return;
 
     setIsInviting(true);
     try {
-      // --- Placeholder for Supabase Function Call ---
-      // In a real app, you would call a Supabase Edge Function here
-      // to handle the logic securely (finding user ID, checking permissions, etc.)
-      // For now, we'll simulate the check and direct DB interaction (less secure)
-
       // 1. Find the invited user's ID
       const { data: invitedProfile, error: profileError } = await supabase
         .from("profiles")
@@ -69,7 +63,7 @@ export function UserList() {
           .eq("chat_id", currentChat.id)
           .eq("invited_user_id", invitedUserId)
           .eq("status", "pending")
-          .maybeSingle(); // Use maybeSingle to not error if no invite exists
+          .maybeSingle();
 
       if (existingInviteError) throw existingInviteError;
       if (existingInvitation) {
@@ -78,7 +72,7 @@ export function UserList() {
         );
       }
 
-      // 4. Create invitation (Direct DB call - consider moving to function)
+      // 4. Create invitation
       const { error: insertError } = await supabase
         .from("chat_invitations")
         .insert({
@@ -90,18 +84,16 @@ export function UserList() {
 
       if (insertError) throw insertError;
 
-      // --- End Placeholder ---
-
       toast({
         title: "Invitation Sent",
         description: `Invitation sent to ${inviteUsername.trim()}.`,
       });
       setInviteUsername("");
       setIsInviteDialogOpen(false);
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Error Sending Invitation",
-        description: error.message || "Could not send invitation.",
+        description: (error as Error).message || "Could not send invitation.",
         variant: "destructive",
       });
     } finally {
